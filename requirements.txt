@@ -1,0 +1,9 @@
+pm4py==2.7.23.3
+duckdb
+pandas
+fastapi
+uvicorn
+pydantic
+python-multipart
+matplotlib
+

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIEM 告警挖掘与攻击路径分析 Demo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: "PingFang SC", "Segoe UI", Arial, sans-serif; 
+            max-width: 1100px; 
+            margin: 30px auto; 
+            padding: 0 20px; 
+            color: #2c3e50;
+            background: #fafbfc;
+        }
+        .header { margin-bottom: 24px; }
+        .header h1 { font-size: 28px; color: #1e293b; margin-bottom: 8px; }
+        .header p { color: #64748b; font-size: 15px; line-height: 1.6; }
+        .card { 
+            border: 1px solid #e8ecef; 
+            border-radius: 10px; 
+            padding: 24px; 
+            margin: 20px 0; 
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+        }
+        .card h2 { 
+            margin-top: 0; 
+            margin-bottom: 16px;
+            font-size: 18px; 
+            color: #1e293b;
+        }
+        .metric-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 16px; 
+        }
+        .metric-item { 
+            text-align: center; 
+            padding: 18px 12px; 
+            background: #f8fafc; 
+            border-radius: 8px; 
+        }
+        .metric-item h3 { 
+            margin: 0; 
+            font-size: 28px; 
+            color: #2563eb; 
+            font-weight: 600;
+        }
+        .metric-item p { 
+            margin: 8px 0 0; 
+            font-size: 14px; 
+            color: #64748b; 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 12px; 
+        }
+        th, td { 
+            padding: 12px 14px; 
+            text-align: left; 
+            border-bottom: 1px solid #e8ecef; 
+            font-size: 14px; 
+        }
+        th { 
+            background: #f8fafc; 
+            font-weight: 600; 
+            color: #475569;
+        }
+        tr:hover { background: #f8fafc; }
+        a { color: #2563eb; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SIEM 安全告警挖掘与攻击路径分析系统</h1>
+        <p>💡 核心算法源自硕士学位论文研究，已完成工程化封装与服务化改造</p>
+        <p>基于 Process Mining 实现告警降噪与攻击路径自动识别，适配企业 SIEM 平台告警分析场景</p>
+    </div>
+    
+    <div class="card">
+        <h2>📊 核心效果指标</h2>
+        <div class="metric-grid" id="metricsGrid">
+            <div class="metric-item"><h3>-</h3><p>攻击案例数</p></div>
+            <div class="metric-item"><h3>-</h3><p>告警事件数</p></div>
+            <div class="metric-item"><h3>-</h3><p>误报过滤率</p></div>
+            <div class="metric-item"><h3>-</h3><p>降噪倍数</p></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>⚠️ 高风险攻击案例 TOP10</h2>
+        <table id="attackTable">
+            <thead>
+                <tr>
+                    <th>案例 ID</th>
+                    <th>告警数量</th>
+                    <th>活动类别数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        // 加载全局指标
+        fetch('/api/metrics')
+            .then(res => res.json())
+            .then(data => {
+                const cells = document.querySelectorAll('#metricsGrid h3');
+                cells[0].textContent = data.number_of_cases;
+                cells[1].textContent = data.number_of_events.toLocaleString();
+                cells[2].textContent = data.false_positive_reduction_rate;
+                cells[3].textContent = data.noise_reduction_factor + 'x';
+            })
+            .catch(err => {
+                console.error('加载指标失败:', err);
+            });
+
+        // 加载攻击案例列表
+        fetch('/api/attacks?limit=10')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#attackTable tbody');
+                data.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.case_id}</td>
+                        <td>${item.alert_count}</td>
+                        <td>${item.activity_count}</td>
+                        <td><a href="/api/attack/${item.case_id}" target="_blank">查看完整路径</a></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(err => {
+                console.error('加载攻击列表失败:', err);
+            });
+    </script>
+</body>
+</html>
+
