@@ -29,6 +29,6 @@
 ### 安装运行
 1. 克隆仓库
 ```bash
-git clone https://github.com/你的GitHub用户名/SIEM-Alert-Mining-Attack-Path.git
+git clone https://github.com/Wenduowang22/SIEM-Alert-Mining-Attack-Path.git
 cd SIEM-Alert-Mining-Attack-Path
 
