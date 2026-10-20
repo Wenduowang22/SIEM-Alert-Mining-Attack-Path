@@ -1,1 +1,8 @@
 venv/
+
+# 本地源码备份
+src_backup/
+
+# macOS 系统缓存
+.DS_Store
+
